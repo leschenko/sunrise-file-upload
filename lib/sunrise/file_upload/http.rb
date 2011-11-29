@@ -11,9 +11,9 @@ module Sunrise
 
         def initialize(hash)
           @original_filename = hash[:filename]
-          @content_type      = hash[:type]
-          @headers           = hash[:head]
-          @tempfile          = hash[:tempfile]
+          @content_type = hash[:type]
+          @headers = hash[:head]
+          @tempfile = hash[:tempfile]
           raise(ArgumentError, ':tempfile is required') unless @tempfile
         end
 
@@ -43,26 +43,34 @@ module Sunrise
       class QqFile < ::Tempfile
 
         def initialize(filename, request, tmpdir = Dir::tmpdir)
-          @original_filename  = filename
+          @original_filename = filename
           @request = request
-          
+
           super Digest::SHA1.hexdigest(filename), tmpdir
           fetch
         end
-       
+
         def fetch
-          self.write @request.raw_post
+          self.write(body)
           self.rewind
           self
         end
-       
+
         def original_filename
           @original_filename
         end
-       
+
         def content_type
-          types = MIME::Types.type_for(@request.content_type)
-	        types.empty? ? @request.content_type : types.first.to_s
+          types = MIME::Types.type_for(original_filename)
+          types.empty? ? @request.content_type : types.first.to_s
+        end
+
+        def body
+          if @request.raw_post.respond_to?(:force_encoding)
+            @request.raw_post.force_encoding("UTF-8")
+          else
+            @request.raw_post
+          end
         end
       end
       
@@ -74,6 +82,8 @@ module Sunrise
           UploadedFile.new(value)
         elsif value.is_a?(String)
           QqFile.new(*args)
+        else
+          value
         end
       end
     end
