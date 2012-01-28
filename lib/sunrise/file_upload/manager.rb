@@ -30,8 +30,18 @@ module Sunrise
           end
 		      asset.assetable_id = (params[:assetable_id] || 0).to_i
 		      asset.guid = params[:guid]
-        	asset.data = Http.normalize_param(params[:qqfile], request)
-          
+
+          if params[:img_url]
+            if params[:img_url].include?("://")
+              asset.remote_data_url = params[:img_url]
+            else
+              path = File.join(Sunrise::FileUpload.base_path, "public#{params[:img_url]}")
+              File.open(path) { |f| asset.data = f } if File.exists?(path)
+            end
+          else
+            asset.data = Http.normalize_param(params[:qqfile], request)
+          end
+
           _run_callbacks(:before_create, env, asset)
           
           if asset.save

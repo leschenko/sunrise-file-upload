@@ -1,5 +1,8 @@
 module Sunrise
   module FileUpload
+    mattr_accessor :base_path
+    @@base_path = ''
+
     autoload :Http, 'sunrise/file_upload/http'
     autoload :Manager, 'sunrise/file_upload/manager'
     autoload :Request, 'sunrise/file_upload/request'
@@ -12,6 +15,11 @@ module Sunrise
     def self.guid
       ::SecureRandom.base64(15).tr('+/=', 'xyz').slice(0, 10)
     end
+
+    def self.setup
+      yield self
+    end
+
   end
 end
 
