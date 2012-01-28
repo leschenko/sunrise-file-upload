@@ -25,8 +25,8 @@ module Sunrise
           
           asset = find_or_build_asset(params)
         	asset.assetable_type = params[:assetable_type]
-          if (crop_attrs = params[:crop_attrs]) && asset.respond_to?(:crop_attrs)
-            asset.crop_attrs = {:x => crop_attrs[:x], :y => crop_attrs[:y], :h => crop_attrs[:h], :w => crop_attrs[:w]}
+          if params[:crop_attrs] && asset.respond_to?(:crop_attrs)
+            asset.crop_attrs = params[:crop_attrs]
           end
 		      asset.assetable_id = (params[:assetable_id] || 0).to_i
 		      asset.guid = params[:guid]
