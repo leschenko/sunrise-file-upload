@@ -64,7 +64,11 @@ module Sunrise
           klass = load_klass(reflection.class_name)
           
           asset = nil
-          asset = find_asset(klass, params) unless reflection.collection?
+          unless reflection.collection?
+            params[:asset] ||= {}
+            params[:asset][:is_main] = true
+            asset = find_asset(klass, params)
+          end
           asset || klass.new(params[:asset])
         end
         
@@ -74,7 +78,7 @@ module Sunrise
         end
         
         def find_asset(klass, params)
-          query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => true)
+          query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => !!params[:is_main])
           
           if !params[:assetable_id].blank?
             query = query.where(:assetable_id => params[:assetable_id].to_i)
