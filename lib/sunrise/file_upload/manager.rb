@@ -66,7 +66,7 @@ module Sunrise
           asset = nil
           unless reflection.collection?
             params[:asset] ||= {}
-            params[:asset][:is_main] = true
+            params[:asset][:is_main] = params[:is_main] = true
             asset = find_asset(klass, params)
           end
           asset || klass.new(params[:asset])
