@@ -38,12 +38,17 @@ module Sunrise
         
         # Find asset by guid
         def fileupload_find(method, guid)
-          klass = fileupload_klass(method)
+          klass = fileupload_scope(method)
           klass.where(:guid => guid).first
         end
         
         protected
           
+          def fileupload_scope(method)
+            assoc = reflections[method.to_sym]
+            assoc.sanitized_conditions ? assoc.klass.where(assoc.sanitized_conditions) : assoc.klass
+          end
+
           def fileupload_klass(method)
             reflections[method.to_sym].klass
           end
