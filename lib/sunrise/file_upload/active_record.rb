@@ -39,7 +39,7 @@ module Sunrise
         # Find asset by guid
         def fileupload_find(method, guid)
           klass = fileupload_scope(method)
-          klass.where(:guid => guid).first
+          klass.where(:guid => guid).all
         end
         
         protected
