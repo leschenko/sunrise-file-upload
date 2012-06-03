@@ -63,10 +63,11 @@ module Sunrise
           reflection = assetable.reflect_on_association(attribute_name)
           klass = load_klass(reflection.class_name)
           
-          asset = nil
-          unless reflection.collection?
-            params[:asset] ||= {}
-            params[:asset][:is_main] = params[:is_main] = true
+          params[:asset] ||= {}
+          if reflection.collection?
+            asset = nil
+          else
+            params[:asset][:is_main] = true
             asset = find_asset(klass, params)
           end
           asset || klass.new(params[:asset])
@@ -78,11 +79,11 @@ module Sunrise
         end
         
         def find_asset(klass, params)
-          query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => !!params[:is_main])
+          query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => !!params[:asset][:is_main])
           
-          if !params[:assetable_id].blank?
+          if params[:assetable_id].present?
             query = query.where(:assetable_id => params[:assetable_id].to_i)
-          elsif !params[:guid]
+          elsif params[:guid].present?
             query = query.where(:guid => params[:guid])
           else
             query = query.where(:id => params[:id])
