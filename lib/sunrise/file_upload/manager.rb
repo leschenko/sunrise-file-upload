@@ -64,13 +64,11 @@ module Sunrise
           klass = load_klass(reflection.class_name)
           
           params[:asset] ||= {}
-          if reflection.collection?
-            asset = nil
-          else
+          unless reflection.collection?
             params[:asset][:is_main] = true
-            asset = find_asset(klass, params)
+            destroy_asset(klass, params)
           end
-          asset || klass.new(params[:asset])
+          klass.new(params[:asset])
         end
         
         def load_klass(class_name)
@@ -78,7 +76,7 @@ module Sunrise
           class_name.to_s.classify.constantize
         end
         
-        def find_asset(klass, params)
+        def destroy_asset(klass, params)
           query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => !!params[:asset][:is_main])
           
           if params[:assetable_id].present?
@@ -89,9 +87,23 @@ module Sunrise
             query = query.where(:id => params[:id])
           end
           
+          query.destroy_all
+        end
+
+        def find_asset(klass, params)
+          query = klass.scoped.where(:assetable_type => params[:assetable_type], :is_main => !!params[:asset][:is_main])
+
+          if params[:assetable_id].present?
+            query = query.where(:assetable_id => params[:assetable_id].to_i)
+          elsif params[:guid].present?
+            query = query.where(:guid => params[:guid])
+          else
+            query = query.where(:id => params[:id])
+          end
+
           query.first
         end
-        
+
         def raw_file_post?(env)
           env['REQUEST_METHOD'] == 'POST' && upload_path?(env['PATH_INFO'])
         end
