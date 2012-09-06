@@ -64,6 +64,7 @@ module Sunrise
           klass = load_klass(reflection.class_name)
           
           params[:asset] ||= {}
+          params[:asset][:original_name] = params[:qqfile]
           unless reflection.collection?
             params[:asset][:is_main] = true
             destroy_asset(klass, params)
