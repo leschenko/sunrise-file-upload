@@ -32,7 +32,7 @@ module Sunrise
 		      asset.guid = params[:guid]
 
           if params[:img_url]
-            if params[:img_url].include?("://")
+            if params[:img_url].include?("//")
               asset.remote_data_url = params[:img_url]
             else
               path = File.join(Sunrise::FileUpload.base_path, "public#{params[:img_url]}")
