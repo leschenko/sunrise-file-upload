@@ -45,6 +45,7 @@ module Sunrise
           _run_callbacks(:before_create, env, asset)
           
           if asset.save
+            @destroy_assets.map(&:destroy)
             body = asset.to_json
             status = 200
             
@@ -87,8 +88,10 @@ module Sunrise
           else
             query = query.where(:id => params[:id])
           end
-          
-          query.destroy_all
+
+          #query.destroy_all
+          # wil be destroyed after asset save
+          @destroy_assets = query.all
         end
 
         def find_asset(klass, params)
