@@ -45,7 +45,7 @@ module Sunrise
           _run_callbacks(:before_create, env, asset)
           
           if asset.save
-            @destroy_assets.map(&:destroy)
+            @destroy_assets.map(&:destroy) if @destroy_assets
             body = asset.to_json
             status = 200
             
