@@ -47,6 +47,7 @@ module Sunrise
           if asset.save
             @destroy_assets.map(&:destroy) if @destroy_assets
             body = asset.to_json
+
             status = 200
             
             _run_callbacks(:after_create, env, asset)
@@ -55,7 +56,7 @@ module Sunrise
             status = 422
           end
           
-          [status, {'Content-Type' => 'text/html', 'Content-Length' => body.size.to_s}, body]
+          [status, {'Content-Type' => 'application/json'}, body]
         end
         
         def find_or_build_asset(params)
