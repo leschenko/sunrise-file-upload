@@ -67,7 +67,8 @@ module Sunrise
           
           params[:asset] ||= {}
           params[:asset][:original_name] = params[:qqfile] if klass.column_names.include?('original_name')
-          if reflection.conditions.flatten.first.try(:fetch, :is_main)
+          reflection_conditions = reflection.conditions.flatten.first
+          if reflection_conditions ? reflection_conditions[:is_main] : !reflection.collection?
             params[:asset][:is_main] = true
             destroy_asset(klass, params)
           end
