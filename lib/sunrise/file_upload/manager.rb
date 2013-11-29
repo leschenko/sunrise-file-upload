@@ -66,7 +66,7 @@ module Sunrise
           klass = load_klass(reflection.class_name)
           
           params[:asset] ||= {}
-          params[:asset][:original_name] = params[:qqfile] if klass.column_names.include?('original_name')
+          #params[:asset][:original_name] = params[:qqfile] if klass.column_names.include?('original_name')
           reflection_conditions = reflection.conditions.flatten.first
           if reflection_conditions ? reflection_conditions[:is_main] : !reflection.collection?
             params[:asset][:is_main] = true
